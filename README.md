@@ -1,24 +1,17 @@
-# README
+# Desafio Técnico Luizalabs - Vertical Logística
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Passos para rodar a aplicação localmente
 
-Things you may want to cover:
+1. fazer o build da imagem
 
-* Ruby version
+```
+docker-compose build
+```
 
-* System dependencies
+2. Subir a aplicação
 
-* Configuration
+```
+docker-compose up
+```
 
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Após esses comandos a aplicação ficará disponivel em `http://localhost:3000`.
