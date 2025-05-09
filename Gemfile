@@ -25,4 +25,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 8.0'
 end
 
+group :test do
+  gem 'database_cleaner-active_record'
+end
 
