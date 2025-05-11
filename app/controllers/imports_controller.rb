@@ -12,23 +12,45 @@ class ImportsController < ApplicationController
   private
 
   def parse_transactions(data)
-    data.split("\n").map do |line|
+    transactions = data.split("\n").map do |line|
       next if line.strip.empty?
 
       {
-        user: {
-          user_id: line[0..9].strip,
-          name: line[10..54].strip
-        },
-        order: {
-          order_id: line[55..64].strip,
-          purchase_date: line[87..94]
-        },
-        product: {
-          product_id: line[65..74].strip,
-          value: line[75..86].strip.to_f
-        }
+        user_id: line[0..9].strip,
+        name: line[10..54].strip,
+        order_id: line[55..64].strip,
+        product_id: line[65..74].strip,
+        value: line[75..86].strip,
+        purchase_date: line[87..94]
       }
     end.compact
+
+    transactions.group_by { |t| t[:user_id] }.map do |user_id, user_transactions|
+      {
+        user_id: user_id.to_i,
+        name: user_transactions.first[:name],
+        orders: user_transactions.group_by { |t| t[:order_id] }.map do |order_id, order_transactions|
+          {
+            order_id: order_id.to_i,
+            date: format_date(order_transactions.first[:purchase_date]),
+            total: format_decimal(order_transactions.sum { |t| t[:value].to_f }),
+            products: order_transactions.map do |t|
+              {
+                product_id: t[:product_id].to_i,
+                value: format_decimal(t[:value])
+              }
+            end
+          }
+        end
+      }
+    end
+  end
+
+  def format_date(date_str)
+    Date.strptime(date_str, "%Y%m%d").iso8601
+  end
+
+  def format_decimal(value)
+    "%.2f" % value
   end
 end
