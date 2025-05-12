@@ -1,11 +1,40 @@
 class ImportsController < ApplicationController
   def transactions
     if params[:data].blank?
+
       render json: { error: "Dados não fornecidos" }, status: :unprocessable_entity
       return
     end
 
     parsed_data = parse_transactions(params[:data])
+
+    ActiveRecord::Base.transaction do
+      parsed_data.each do |user_data|
+        user = User.find_or_create_by!(
+          user_id: user_data[:user_id],
+          name: user_data[:name]
+        )
+
+        user_data[:orders].each do |order_data|
+          order = Order.create!(
+            order_id: order_data[:order_id],
+            user: user,
+            purchase_date: Date.parse(order_data[:date])
+          )
+
+          order_data[:products].each do |product_data|
+            product = Product.find_or_create_by!(product_id: product_data[:product_id])
+
+            OrderItem.create!(
+              order: order,
+              product: product,
+              value: product_data[:value]
+            )
+          end
+        end
+      end
+    end
+
     render json: { data: parsed_data }, status: :ok
   end
 

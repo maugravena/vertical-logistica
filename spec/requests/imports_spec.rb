@@ -50,7 +50,6 @@ RSpec.describe '/imports', type: :request do
       end
     end
 
-
     context 'when using a small sample dataset' do
       let(:sample_payload) do
         File.read(Rails.root.join('spec', 'fixtures', 'payloads', 'small_sample_data.txt'))
@@ -91,6 +90,42 @@ RSpec.describe '/imports', type: :request do
             }
           ]
         })
+      end
+
+      it 'saves the transactions data to the database' do
+        expect {
+          post '/imports/transactions', params: { data: sample_payload }
+        }.to change(User, :count).by(2)
+          .and change(Order, :count).by(2)
+          .and change(Product, :count).by(2)
+          .and change(OrderItem, :count).by(3)
+
+        expect(response).to have_http_status(:ok)
+
+        user = User.find_by(id: 1)
+        expect(user.name).to eq('Sammie Baumbach')
+
+        order = user.orders.first
+        expect(order.id).to eq(1)
+        expect(order.purchase_date).to eq(Date.new(2021, 9, 8))
+
+        order_items = order.order_items.order(:product_id)
+        expect(order_items.count).to eq(2)
+        expect(order_items[0].product_id).to eq(1)
+        expect(order_items[0].value).to eq(1121.58)
+        expect(order_items[1].product_id).to eq(2)
+        expect(order_items[1].value).to eq(1915.86)
+
+        user = User.find_by(id: 2)
+        expect(user.name).to eq('Augustus Aufderhar')
+
+        order = user.orders.first
+        expect(order.id).to eq(2)
+        expect(order.purchase_date).to eq(Date.new(2021, 12, 12))
+
+        order_item = order.order_items.first
+        expect(order_item.product_id).to eq(1)
+        expect(order_item.value).to eq(281.43)
       end
     end
 
