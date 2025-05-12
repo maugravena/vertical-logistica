@@ -8,16 +8,16 @@ RSpec.describe '/imports', type: :request do
 
     context 'when payload data is present' do
       it 'returns success HTTP 200 :ok' do
-        post '/imports/transactions', params: { data: payload }
+        post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }, env: { 'RAW_POST_DATA': payload }
 
         expect(response).to have_http_status(:ok)
       end
 
       it 'parses multiple orders and products for the same user correctly' do
-        post '/imports/transactions', params: { data: payload }
+        post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }, env: { 'RAW_POST_DATA': payload }
 
         parsed_response = JSON.parse(response.body)
-        john_smith_data = parsed_response['data'].find { |user| user['user_id'] == 200 }
+        john_smith_data = parsed_response.find { |user| user['user_id'] == 200 }
 
         expect(john_smith_data).to eq(
           {
@@ -56,12 +56,12 @@ RSpec.describe '/imports', type: :request do
       end
 
       it 'parses and groups all transactions correctly' do
-        post '/imports/transactions', params: { data: sample_payload }
+        post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }, env: { 'RAW_POST_DATA': sample_payload }
 
         expect(response).to have_http_status(:ok)
         parsed_response = JSON.parse(response.body)
 
-        expect(parsed_response['data']).to contain_exactly({
+        expect(parsed_response).to contain_exactly({
           'user_id' => 1,
           'name' => 'Sammie Baumbach',
           'orders' => [
@@ -94,7 +94,7 @@ RSpec.describe '/imports', type: :request do
 
       it 'saves the transactions data to the database' do
         expect {
-          post '/imports/transactions', params: { data: sample_payload }
+          post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }, env: { 'RAW_POST_DATA': sample_payload }
         }.to change(User, :count).by(2)
           .and change(Order, :count).by(2)
           .and change(Product, :count).by(2)
@@ -131,7 +131,7 @@ RSpec.describe '/imports', type: :request do
 
     context 'when payload data is not presente' do
       it 'returns an error if data is not provided' do
-        post '/imports/transactions', params: {}
+        post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(JSON.parse(response.body)).to eq({ 'error' => 'Dados não fornecidos' })
