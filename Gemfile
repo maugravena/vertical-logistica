@@ -22,11 +22,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
-  gem 'rspec-rails', '~> 8.0'
-  gem 'pry-byebug', '~> 3.11'
+  gem "rspec-rails", "~> 8.0"
+  gem "pry-byebug", "~> 3.11"
 end
 
 group :test do
-  gem 'database_cleaner-active_record'
+  gem "database_cleaner-active_record"
 end
-
