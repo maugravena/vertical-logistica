@@ -5,11 +5,11 @@ class ImportsController < ApplicationController
       return
     end
 
-    parsed_data = TransactionParser.call(request.raw_post)
-    TransactionPersistence.call(parsed_data)
+    parsed_data = Transaction::Parser.call(request.raw_post)
+    Transaction::Persistence.call(parsed_data)
 
     render json: { message: "Data imported successfully" }, status: :ok
-  rescue TransactionParser::ParseError => e
+  rescue Transaction::Parser::ParseError => e
     render json: { error: "Parsing error: #{e.message}" }, status: :unprocessable_entity
   rescue ActiveRecord::RecordInvalid => e
     render json: { error: "Database error: #{e.record.errors.full_messages.join(', ')}" }, status: :unprocessable_entity

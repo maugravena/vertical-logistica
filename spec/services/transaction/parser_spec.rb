@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TransactionParser, type: :service do
+RSpec.describe Transaction::Parser, type: :service do
   describe '.parse' do
     context 'when given a valid transaction data' do
       let(:raw_data) do
@@ -120,7 +120,8 @@ RSpec.describe TransactionParser, type: :service do
         end
 
         it 'raises an error for invalid date' do
-          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid date format/)
+          expect { described_class.call(raw_data) }
+            .to raise_error(Transaction::Parser::ParseError, /Invalid date format/)
         end
       end
 
@@ -130,7 +131,8 @@ RSpec.describe TransactionParser, type: :service do
         end
 
         it 'raises a ParseError with an invalid date format message' do
-          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid date format/)
+          expect { described_class.call(raw_data) }
+            .to raise_error(Transaction::Parser::ParseError, /Invalid date format/)
         end
       end
 
@@ -143,7 +145,8 @@ RSpec.describe TransactionParser, type: :service do
         end
 
         it 'raises a ParseError with an invalid data format message' do
-          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid data format/)
+          expect { described_class.call(raw_data) }
+            .to raise_error(Transaction::Parser::ParseError, /Invalid data format/)
         end
       end
     end

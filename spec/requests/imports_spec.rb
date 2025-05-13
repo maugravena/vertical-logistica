@@ -53,6 +53,7 @@ RSpec.describe '/imports', type: :request do
         expect(order_item.value).to eq(281.43)
       end
     end
+
     context 'when payload data is missing' do
       it 'returns HTTP 422 :unprocessable_entity with an error message' do
         post '/imports/transactions', headers: { 'CONTENT_TYPE': 'text/plain' }, env: { 'RAW_POST_DATA': '' }
@@ -64,7 +65,7 @@ RSpec.describe '/imports', type: :request do
 
     context 'when a parsing error occurs' do
       before do
-        allow(TransactionParser).to receive(:call).and_raise(TransactionParser::ParseError, 'Invalid format')
+        allow(Transaction::Parser).to receive(:call).and_raise(Transaction::Parser::ParseError, 'Invalid format')
       end
 
       it 'returns HTTP 422 :unprocessable_entity with a parsing error message' do
@@ -88,7 +89,7 @@ RSpec.describe '/imports', type: :request do
 
     context 'when a database error occurs' do
       before do
-        allow(TransactionPersistence).to receive(:call).and_raise(ActiveRecord::RecordInvalid.new(User.new))
+        allow(Transaction::Persistence).to receive(:call).and_raise(ActiveRecord::RecordInvalid.new(User.new))
       end
 
       it 'returns HTTP 422 :unprocessable_entity with a database error message' do
@@ -101,7 +102,7 @@ RSpec.describe '/imports', type: :request do
 
     context 'when an unexpected error occurs' do
       before do
-        allow(TransactionPersistence).to receive(:call).and_raise(StandardError, 'Something went wrong')
+        allow(Transaction::Persistence).to receive(:call).and_raise(StandardError, 'Something went wrong')
       end
 
       it 'returns HTTP 500 :internal_server_error with an unexpected error message' do

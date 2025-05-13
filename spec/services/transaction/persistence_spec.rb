@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TransactionPersistence, type: :service do
+RSpec.describe Transaction::Persistence, type: :service do
   describe '.call' do
     let(:parsed_data) do
       [ {
