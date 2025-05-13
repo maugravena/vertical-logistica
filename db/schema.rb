@@ -10,38 +10,41 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_135155) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_13_034213) do
   create_table "order_items", force: :cascade do |t|
     t.integer "order_id", null: false
     t.integer "product_id", null: false
+    t.decimal "value", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "value"
     t.index ["order_id"], name: "index_order_items_on_order_id"
     t.index ["product_id"], name: "index_order_items_on_product_id"
   end
 
   create_table "orders", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.string "order_id"
-    t.date "purchase_date"
+    t.integer "order_id", null: false
+    t.date "purchase_date", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["order_id", "user_id", "purchase_date"], name: "index_orders_on_order_id_and_user_id_and_purchase_date", unique: true
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
 
   create_table "products", force: :cascade do |t|
-    t.string "product_id"
-    t.decimal "product_value"
+    t.integer "product_id", null: false
+    t.decimal "product_value", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_products_on_product_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "user_id"
-    t.string "name"
+    t.integer "user_id", null: false
+    t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_users_on_user_id", unique: true
   end
 
   add_foreign_key "order_items", "orders"

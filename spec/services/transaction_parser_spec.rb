@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe TransactionParser do
+RSpec.describe TransactionParser, type: :service do
   describe '.parse' do
     context 'when given a valid transaction data' do
       let(:raw_data) do
