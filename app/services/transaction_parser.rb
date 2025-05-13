@@ -1,4 +1,6 @@
 class TransactionParser
+  class ParseError < StandardError; end
+
   FIELD_POSITIONS = {
     user_id: 0..9,
     name: 10..54,
@@ -28,18 +30,24 @@ class TransactionParser
     @data.split("\n").map do |line|
       next if line.strip.empty?
 
-      {
-        user_id: line[FIELD_POSITIONS[:user_id]].strip.to_i,
-        name: line[FIELD_POSITIONS[:name]].strip,
-        order_id: line[FIELD_POSITIONS[:order_id]].strip.to_i,
-        product_id: line[FIELD_POSITIONS[:product_id]].strip.to_i,
-        value: line[FIELD_POSITIONS[:value]].strip,
-        purchase_date: line[FIELD_POSITIONS[:purchase_date]].strip
-      }
+      begin
+        {
+          user_id: line[FIELD_POSITIONS[:user_id]].strip.to_i,
+          name: line[FIELD_POSITIONS[:name]].strip,
+          order_id: line[FIELD_POSITIONS[:order_id]].strip.to_i,
+          product_id: line[FIELD_POSITIONS[:product_id]].strip.to_i,
+          value: line[FIELD_POSITIONS[:value]].strip,
+          purchase_date: line[FIELD_POSITIONS[:purchase_date]].strip
+        }
+      rescue StandardError => e
+        raise ParseError, "Invalid data format: #{e.message}"
+      end
     end.compact
   end
 
   def group_transactions(transactions)
+    raise ParseError, "Invalid transactions data" if transactions.nil? || !transactions.is_a?(Array)
+
     transactions.group_by { |t| t[:user_id] }.map do |user_id, user_transactions|
       {
         user_id: user_id,
@@ -50,6 +58,8 @@ class TransactionParser
   end
 
   def group_orders(user_transactions)
+    raise ParseError, "Invalid user transactions data" if user_transactions.nil? || !user_transactions.is_a?(Array)
+
     user_transactions.group_by { |t| t[:order_id] }.map do |order_id, order_transactions|
       {
         order_id: order_id,
@@ -61,6 +71,8 @@ class TransactionParser
   end
 
   def group_products(order_transactions)
+    raise ParseError, "Invalid order transactions data" if order_transactions.nil? || !order_transactions.is_a?(Array)
+
     order_transactions.sort_by { |t| t[:product_id] }.map do |t|
       {
         product_id: t[:product_id],
@@ -71,6 +83,8 @@ class TransactionParser
 
   def format_date(date_string)
     Date.strptime(date_string, "%Y%m%d").iso8601
+  rescue Date::Error
+    raise ParseError, "Invalid date format: #{date_string}"
   end
 
   def format_decimal(value)

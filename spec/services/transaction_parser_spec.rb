@@ -116,11 +116,34 @@ RSpec.describe TransactionParser, type: :service do
     context 'with invalid data format' do
       context 'when date is invalid' do
         let(:raw_data) do
-          "0000000001User One                                         0000000001000000001000100.00    20219999"
+          "0000000200                                   John Smith00000001010000000001      150.00202105xx"
         end
 
         it 'raises an error for invalid date' do
-          expect { described_class.call(raw_data) }.to raise_error(Date::Error)
+          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid date format/)
+        end
+      end
+
+      context 'when given invalid date format' do
+        let(:raw_data) do
+          "0000000200                                   John Smith00000001010000000001      150.00INVALID"
+        end
+
+        it 'raises a ParseError with an invalid date format message' do
+          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid date format/)
+        end
+      end
+
+      context 'when given malformed data for grouping' do
+        let(:raw_data) do
+          <<~TEXT
+            0000000200                                   John Smith00000001010000000001      150.0020210501
+            INVALID DATA LINE
+          TEXT
+        end
+
+        it 'raises a ParseError with an invalid data format message' do
+          expect { described_class.call(raw_data) }.to raise_error(TransactionParser::ParseError, /Invalid data format/)
         end
       end
     end
