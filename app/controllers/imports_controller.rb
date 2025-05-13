@@ -6,33 +6,7 @@ class ImportsController < ApplicationController
     end
 
     parsed_data = TransactionParser.call(request.raw_post)
-
-    ActiveRecord::Base.transaction do
-      parsed_data.each do |user_data|
-        user = User.find_or_create_by!(
-          user_id: user_data[:user_id],
-          name: user_data[:name]
-        )
-
-        user_data[:orders].each do |order_data|
-          order = Order.create!(
-            order_id: order_data[:order_id],
-            user: user,
-            purchase_date: Date.parse(order_data[:date])
-          )
-
-          order_data[:products].each do |product_data|
-            product = Product.find_or_create_by!(product_id: product_data[:product_id])
-
-            OrderItem.create!(
-              order: order,
-              product: product,
-              value: product_data[:value].to_f
-            )
-          end
-        end
-      end
-    end
+    TransactionPersistence.call(parsed_data)
 
     saved_data = User.includes(orders: { order_items: :product })
                     .where(user_id: parsed_data.map { |d| d[:user_id] })
