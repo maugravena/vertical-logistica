@@ -9,7 +9,7 @@
 Analisando o conjunto de dados do arquivo posicional entendi cada linha do arquivo como uma transação de venda relacionada a
 pedido e usuários.
 
-- Models: User`, `Order`, `Product`, `OrderItem`
+- Models: `User`, `Order`, `Product`, `OrderItem`
 - Controllers
   - `TransactionsController`: responsável por disponibilizar os dados salvos a partir do conteúdo da importação do arquivo.
   - `ImportsController`: Faz o parser dos dados do arquivo posicional e salva os dados estruturados no banco.
