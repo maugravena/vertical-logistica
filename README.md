@@ -112,6 +112,7 @@ curl --request GET \
 
 ## Melhorias
 
+- Adicionar tratamento de erro para altentar salvar dados duplicados.
 - Implementar cache/paginação para consulta das orders.
 - Adicionar validação antes de salvar os dados.
 - Substituir importação de dados síncrona por fluxo async utilizando ferramentas com Sidekiq.
