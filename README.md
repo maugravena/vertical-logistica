@@ -1,17 +1,17 @@
 # Desafio Técnico Luizalabs - Vertical Logística
 
-- Projeto desenvolvido com a mais recente de Rails (versão 8)
+- Projeto desenvolvido com a mais recente versão de Rails (versão 8)
 - Banco de dados padrão do Rails SQLite para ambiente de desenvolvimento
 - RSpec para os testes automatizados
 
 ## Arquitetura
 
-Analisando o conjunto de dados do arquivo posicional entendi cada linha do arquivo como uma transação de venda relacionada a
-pedido e usuários.
+Analisando o conjunto de dados do arquivo posicional entendi cada linha do arquivo como uma transação de venda, relacionada a
+pedido e usuários com seus respectivos preços de produto.
 
 - Models: `User`, `Order`, `Product`, `OrderItem`
 - Controllers
-  - `TransactionsController`: responsável por disponibilizar os dados salvos a partir do conteúdo da importação do arquivo.
+  - `TransactionsController`: Responsável por disponibilizar os dados salvos a partir do conteúdo da importação do arquivo.
   - `ImportsController`: Faz o parser dos dados do arquivo posicional e salva os dados estruturados no banco.
 
 Organização do código em Services, a ideia é ter um controller com pouco código e sem lógica de negócios. Abordagem
@@ -112,6 +112,6 @@ curl --request GET \
 
 ## Melhorias
 
-- Implementar cache/paginação para consulta das orders sem filtro
-- Adicionar validação antes de salvar os dados
-- Substituir importação de dados síncrona por fluxo async utilizando ferramentas com Sidekiq
+- Implementar cache/paginação para consulta das orders.
+- Adicionar validação antes de salvar os dados.
+- Substituir importação de dados síncrona por fluxo async utilizando ferramentas com Sidekiq.
